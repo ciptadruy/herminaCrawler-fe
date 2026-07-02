@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { postJson } from "../lib/api";
+import { API_BASE_URL, postJson } from "../lib/api";
 import { useAuth } from "../lib/auth-context";
 import { AlertCircle, Lock, Mail, Shield, Building, UserPlus, RefreshCw } from "lucide-react";
 
@@ -33,7 +33,7 @@ export default function LoginPage() {
       formData.append("username", email);
       formData.append("password", password);
 
-      const response = await fetch("http://localhost:8000/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -78,7 +78,7 @@ export default function LoginPage() {
       formData.append("username", email);
       formData.append("password", password);
 
-      const loginResponse = await fetch("http://localhost:8000/api/auth/login", {
+      const loginResponse = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",

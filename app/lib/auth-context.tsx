@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { fetchJson } from "./api";
+import { API_BASE_URL } from "./api";
 
 // Update types.ts later if needed, but for now we define User here or import it
 export interface AuthUser {
@@ -49,8 +49,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUser = async (authToken: string) => {
     try {
-      // Call endpoint auth/me. We temporarily pass headers here manually
-      const userPayload = await fetchJson<AuthUser>("/api/auth/me");
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+        cache: "no-store",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
+
+      const userPayload = (await response.json()) as AuthUser;
       setUser(userPayload);
     } catch (err) {
       console.error("Failed to fetch user profiles", err);
