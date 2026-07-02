@@ -2,11 +2,11 @@ export type Health = { status: string; app: string; env: string };
 
 export type PublicSettings = {
   review_source_mode: string;
-  gemini_mode: string;
+  local_llm_model: string;
   selenium_max_target_reviews: number;
   analysis_batch_size: number;
   google_maps_api_key_configured: boolean;
-  gemini_api_key_configured: boolean;
+  local_llm_api_key_configured: boolean;
 };
 
 export type Location = {

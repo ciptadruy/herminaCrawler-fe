@@ -30,11 +30,11 @@ import {
 type Health = { status: string; app: string; env: string };
 type PublicSettings = {
   review_source_mode: string;
-  gemini_mode: string;
+  local_llm_model: string;
   selenium_max_target_reviews: number;
   analysis_batch_size: number;
   google_maps_api_key_configured: boolean;
-  gemini_api_key_configured: boolean;
+  local_llm_api_key_configured: boolean;
 };
 type Location = {
   id: number;
@@ -955,7 +955,7 @@ export default function MissionControl() {
               <SectionHeader
                 kicker="Analysis Coverage"
                 title="Model activity"
-                helper={`${data?.settings.gemini_mode ?? "unknown"} mode · batch ${data?.settings.analysis_batch_size ?? "—"}`}
+                helper={`LLM: ${data?.settings.local_llm_model ?? "unknown"} · batch ${data?.settings.analysis_batch_size ?? "—"}`}
               />
               <div className="coverage-ring" style={{ "--coverage": `${analyzedCoverage}%` } as React.CSSProperties}>
                 <strong>{formatPercent(analyzedCoverage)}</strong>
@@ -1134,9 +1134,9 @@ export default function MissionControl() {
             />
             <dl className="settings-list">
               <div><dt>Review Source</dt><dd>{data?.settings.review_source_mode ?? "—"}</dd></div>
-              <div><dt>Gemini Mode</dt><dd>{data?.settings.gemini_mode ?? "—"}</dd></div>
+              <div><dt>LLM Model</dt><dd>{data?.settings.local_llm_model ?? "—"}</dd></div>
               <div><dt>Google Key</dt><dd>{data?.settings.google_maps_api_key_configured ? "Configured" : "Missing"}</dd></div>
-              <div><dt>Gemini Key</dt><dd>{data?.settings.gemini_api_key_configured ? "Configured" : "Missing"}</dd></div>
+              <div><dt>LLM Key</dt><dd>{data?.settings.local_llm_api_key_configured ? "Configured" : "Missing"}</dd></div>
               <div><dt>DB Status</dt><dd>{databaseCheck?.status ?? "Belum dicek"}</dd></div>
             </dl>
           </article>
