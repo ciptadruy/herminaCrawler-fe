@@ -107,7 +107,7 @@ export default function AnalysisClient() {
           <SectionHeader
             kicker="Run Analysis"
             title="Analyze pending queue"
-            helper={`Gemini mode: ${settings?.gemini_mode ?? "unknown"} · batch ${settings?.analysis_batch_size ?? "—"}`}
+            helper={`Model: ${settings?.local_llm_model ?? "unknown"} · batch ${settings?.analysis_batch_size ?? "—"}`}
           />
           <div className="action-controls fetch-controls">
             <label>

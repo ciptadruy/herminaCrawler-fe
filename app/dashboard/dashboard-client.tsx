@@ -121,7 +121,7 @@ export default function DashboardClient() {
               <div><dt>Health</dt><dd>{data.health.status}</dd></div>
               <div><dt>Active Locations</dt><dd>{formatNumber(activeLocations)}</dd></div>
               <div><dt>Latest Fetch</dt><dd>{formatDate(data.latestFetch.item?.started_at)}</dd></div>
-              <div><dt>Gemini Mode</dt><dd>{data.settings.gemini_mode}</dd></div>
+              <div><dt>LLM Model</dt><dd>{data.settings.local_llm_model}</dd></div>
               <div><dt>Google Key</dt><dd>{data.settings.google_maps_api_key_configured ? "Configured" : "Missing"}</dd></div>
             </dl>
           ) : null}
