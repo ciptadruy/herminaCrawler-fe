@@ -5,6 +5,15 @@ import { API_BASE_URL, postJson } from "../lib/api";
 import { useAuth } from "../lib/auth-context";
 import { AlertCircle, Lock, Mail, Shield, Building, UserPlus, RefreshCw } from "lucide-react";
 
+function passwordPolicyError(password: string): string | null {
+  if (password.length < 8) return "Password minimal 8 karakter.";
+  if (new TextEncoder().encode(password).length > 72) return "Password maksimal 72 byte.";
+  if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+    return "Password harus mengandung minimal satu huruf dan satu angka.";
+  }
+  return null;
+}
+
 export default function LoginPage() {
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState("");
@@ -58,6 +67,13 @@ export default function LoginPage() {
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const passwordError = passwordPolicyError(password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -71,8 +87,8 @@ export default function LoginPage() {
         analyze_competitor_flag: competitorEnabled,
       };
 
-      const response = await postJson<{ id: number }>("/api/auth/register", payload);
-      
+      await postJson<{ id: number }>("/api/auth/register", payload);
+
       // Auto login after successful registration by fetching token
       const formData = new URLSearchParams();
       formData.append("username", email);
@@ -196,12 +212,18 @@ export default function LoginPage() {
               <input
                 type="password"
                 required
+                minLength={isRegister ? 8 : undefined}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="block w-full rounded-lg border border-white/10 bg-white/5 py-2.5 pl-10 pr-3 text-sm text-white placeholder-slate-500 outline-none transition duration-200 focus:border-emerald-500 focus:bg-white/10 focus:ring-1 focus:ring-emerald-500"
               />
             </div>
+            {isRegister ? (
+              <p className="mt-1.5 text-xs text-slate-500">
+                Minimal 8 karakter, kombinasi huruf dan angka.
+              </p>
+            ) : null}
           </div>
 
           {isRegister && (
