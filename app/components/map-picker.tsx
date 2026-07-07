@@ -6,6 +6,7 @@ import { fetchJson } from "../lib/api";
 import { Search, Loader2, MapPin, Check } from "lucide-react";
 
 // Load React Leaflet MapPickerInner dynamically to prevent SSR window is not defined error
+// test
 const MapPickerInner = dynamic(() => import("./map-picker-inner"), {
   ssr: false,
   loading: () => (
@@ -31,6 +32,9 @@ interface MapPickerProps {
   onResolve: (place: ResolvedPlace) => void;
   initialLat?: number;
   initialLng?: number;
+}
+
+interface tes {
 }
 
 export function MapPicker({ onResolve, initialLat, initialLng }: MapPickerProps) {
