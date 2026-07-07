@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Download, RefreshCcw, FileText, FileSpreadsheet, Search, Filter, XCircle } from "lucide-react";
+import { Download, RefreshCcw, FileText, FileSpreadsheet, Search, Filter, XCircle, X } from "lucide-react";
 import { AppShell } from "../components/app-shell";
 import { DataTable, type DataTableColumn } from "../components/data-table";
 import { BackendWarning, Badge, SectionHeader } from "../components/ui";
@@ -48,6 +48,8 @@ export default function ReportsClient() {
   const [filterReportType, setFilterReportType] = useState("all");
   const [filterFormat, setFilterFormat] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   
   const resetHistoryFilters = () => {
@@ -55,12 +57,22 @@ export default function ReportsClient() {
     setFilterReportType("all");
     setFilterFormat("all");
     setFilterStatus("all");
+    setFilterStartDate("");
+    setFilterEndDate("");
   };
   
   const filteredHistory = MOCK_EXPORT_HISTORY.filter(item => {
     if (filterReportType !== "all" && item.type !== filterReportType) return false;
     if (filterFormat !== "all" && item.format !== filterFormat) return false;
     if (filterStatus !== "all" && item.status !== filterStatus) return false;
+    
+    if (filterStartDate || filterEndDate) {
+      const itemDate = new Date(item.date).getTime();
+      const start = filterStartDate ? new Date(filterStartDate).getTime() : 0;
+      const end = filterEndDate ? new Date(filterEndDate).getTime() + 86400000 : Infinity;
+      if (itemDate < start || itemDate > end) return false;
+    }
+    
     return true;
   });
 
@@ -222,10 +234,10 @@ export default function ReportsClient() {
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
           <div className="xl:col-span-4 flex flex-col">
             <article className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col h-full overflow-hidden">
-              <div className="p-6 pb-4 border-b border-slate-100 bg-slate-50/50">
+              <div className="p-6 pb-3 border-b border-slate-100 bg-slate-50/50 [&_.section-header]:mb-0 [&_.section-header]:border-0 [&_.section-header]:pb-0">
                 <SectionHeader kicker="Generate" title="Export Configuration" helper="Konfigurasi parameter laporan baru." />
               </div>
-              <div className="p-6 flex flex-col gap-5 flex-1">
+              <div className="p-6 pt-4 flex flex-col gap-4 flex-1">
                 
                 <div className="flex flex-col gap-2">
                   <label htmlFor="reportType" className="text-sm font-bold text-slate-700">Report Type</label>
@@ -371,6 +383,83 @@ export default function ReportsClient() {
           </div>
         </div>
       </section>
+
+      {/* Extended Filters Drawer */}
+      {isFilterOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-slate-900/30 backdrop-blur-[2px]" 
+            onClick={() => setIsFilterOpen(false)}
+          />
+          
+          <div className="relative w-full max-w-sm bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100">
+              <h2 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                <Filter className="w-5 h-5 text-emerald-600" /> Extended Filters
+              </h2>
+              <button onClick={() => setIsFilterOpen(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-5">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Report Type</label>
+                <select className="w-full text-sm font-bold text-slate-700 border-slate-200 rounded-xl h-10 px-3 bg-slate-50 focus:bg-white focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer" value={filterReportType} onChange={(e) => setFilterReportType(e.target.value)}>
+                  <option value="all">Semua Type</option>
+                  <option value="Executive Summary">Executive Summary</option>
+                  <option value="Raw Reviews">Raw Reviews</option>
+                  <option value="Competitor Report">Competitor Report</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Export Format</label>
+                <select className="w-full text-sm font-bold text-slate-700 border-slate-200 rounded-xl h-10 px-3 bg-slate-50 focus:bg-white focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer" value={filterFormat} onChange={(e) => setFilterFormat(e.target.value)}>
+                  <option value="all">Semua Format</option>
+                  <option value="csv">CSV</option>
+                  <option value="pdf">PDF</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Status</label>
+                <select className="w-full text-sm font-bold text-slate-700 border-slate-200 rounded-xl h-10 px-3 bg-slate-50 focus:bg-white focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                  <option value="all">Semua Status</option>
+                  <option value="completed">Completed</option>
+                  <option value="processing">Processing</option>
+                  <option value="failed">Failed</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Rentang Tanggal (Start Date - End Date)</label>
+                <div className="flex gap-2">
+                  <input type="date" value={filterStartDate} onChange={(e) => setFilterStartDate(e.target.value)} className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:bg-white focus:outline-none focus:border-emerald-500 transition-colors" />
+                  <input type="date" value={filterEndDate} onChange={(e) => setFilterEndDate(e.target.value)} className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:bg-white focus:outline-none focus:border-emerald-500 transition-colors" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-5 border-t border-slate-100 bg-slate-50 flex gap-3">
+              <button 
+                type="button" 
+                onClick={resetHistoryFilters}
+                className="flex-1 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl py-3 shadow-sm hover:bg-slate-50 transition-colors"
+              >
+                Reset
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setIsFilterOpen(false)}
+                className="flex-1 bg-emerald-600 text-white font-bold rounded-xl py-3 shadow-sm hover:bg-emerald-700 transition-colors"
+              >
+                Terapkan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }
