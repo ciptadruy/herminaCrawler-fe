@@ -1,6 +1,16 @@
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ??
-  "http://localhost:8000";
+function resolveApiBaseUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  if (envUrl) {
+    return envUrl.replace(/\/$/, "");
+  } else if (process.env.NODE_ENV === "production") {
+    return "http://192.168.1.3:8000";
+  } else {
+    return "http://localhost:8000";
+  }
+}
+
+export const API_BASE_URL = resolveApiBaseUrl();
 
 // Notified by AuthProvider so a 401 anywhere can clear React auth state
 // before the hard redirect below fires.
