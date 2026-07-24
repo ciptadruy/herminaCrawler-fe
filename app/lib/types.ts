@@ -43,6 +43,8 @@ export type LocationFormState = {
 };
 
 export type FetchLog = {
+  location_id?: number | null;
+  error_message?: string | null;
   id: number;
   location: string;
   source: string;
@@ -63,6 +65,8 @@ export type Review = {
   rating: number | null;
   review_text: string;
   review_time: string | null;
+  owner_response_text?: string | null;
+  owner_response_time?: string | null;
   sentiment: string | null;
   issue_category: string | null;
   urgency: string | null;
